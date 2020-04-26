@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class StartingPanelHandler extends AbstractPanelHandler {
+public class LoginPanelHandler extends AbstractPanelHandler {
 
     private JPanel panel;
     private JTextField usernameTextField;
@@ -20,7 +20,7 @@ public class StartingPanelHandler extends AbstractPanelHandler {
     private JButton adminDBButton;
     private JTextArea output;
 
-    public StartingPanelHandler(MainFrame mainFrame, MainController mainController){
+    public LoginPanelHandler(MainFrame mainFrame, MainController mainController){
         super(mainFrame,mainController);
         super.setPointer(panel, output);
         createButtons();
@@ -55,7 +55,7 @@ public class StartingPanelHandler extends AbstractPanelHandler {
         adminDBButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.switchToAdminDB();
+                mainFrame.switchToDatabaseAdministration();
             }
         });
     }
@@ -66,33 +66,33 @@ public class StartingPanelHandler extends AbstractPanelHandler {
 
     private void userNameTest(){
         if(mainController.grammaTest(usernameTextField.getText())){
-            addToOutput("Der Nutzername gehört zur Sprache der Grammatik.");
+            addToOutput("MAINCONTROLLER: Der Nutzername gehört zur Sprache der Grammatik.");
         }else{
-            addToOutput("FEHLER: Der Nutzername gehört zur nicht Sprache der Grammatik. Bitte einen anderen Namen wählen.");
+            addToOutput("MAINCONTROLLER-FEHLER: Der Nutzername gehört zur nicht Sprache der Grammatik. Bitte einen anderen Namen wählen.");
         }
     }
 
     private void passwordTest(){
         if(mainController.automatonTest(passwordTextField.getText())){
-            addToOutput("Das Passwort wurde vom Automaten akzeptiert.");
+            addToOutput("MAINCONTROLLER: Das Passwort wurde vom Automaten akzeptiert.");
         }else{
-            addToOutput("FEHLER: Das Passwort wurde nicht vom Automaten akzeptiert. Bitte einen anderes Passwort wählen.");
+            addToOutput("MAINCONTROLLER-FEHLER: Das Passwort wurde nicht vom Automaten akzeptiert. Bitte einen anderes Passwort wählen.");
         }
     }
 
     private void createUser(){
         if(mainController.createUser(usernameTextField.getText(),passwordTextField.getText())){
-            addToOutput("Der Nutzer mit dem Namen " + usernameTextField.getText() + " und dem Passwort "+ passwordTextField.getText()+" wurde in der Datenbank hinterlegt.");
+            addToOutput("MAINCONTROLLER: Der Nutzer mit dem Namen " + usernameTextField.getText() + " und dem Passwort "+ passwordTextField.getText()+" wurde in der Datenbank hinterlegt.");
         }else{
-            addToOutput("FEHLER: Mit der eingegebenen Kombination konnte kein Nutzer angelegt werden. Bitte prüfen Sie Ihre Eingabe!");
+            addToOutput("MAINCONTROLLER-FEHLER: Mit der eingegebenen Kombination konnte kein Nutzer angelegt werden. Bitte prüfen Sie Ihre Eingabe!");
         }
     }
 
     private void login(){
         if(mainController.login(usernameTextField.getText(),passwordTextField.getText())){
-            mainFrame.switchSingleOrMulti();
+            mainFrame.switchToSingleOrMultiSelection();
         }else{
-            addToOutput("FEHLER: Login fehlgeschlagen. Bitte prüfen Sie Ihre Eingabe.");
+            addToOutput("MAINCONTROLLER-FEHLER: Login fehlgeschlagen. Bitte prüfen Sie Ihre Eingabe.");
         }
     }
 

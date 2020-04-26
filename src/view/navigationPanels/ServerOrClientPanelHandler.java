@@ -8,14 +8,14 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class SingleOrMultiPanelHandler extends AbstractPanelHandler {
+public class ServerOrClientPanelHandler extends AbstractPanelHandler {
     private JPanel panel;
-    private JButton singleplayerButton;
-    private JButton multiplayerButton;
+    private JButton serverButton;
     private JTextArea output;
     private JButton backButton;
+    private JButton clientButton;
 
-    public SingleOrMultiPanelHandler(MainFrame mainFrame, MainController mainController) {
+    public ServerOrClientPanelHandler(MainFrame mainFrame, MainController mainController) {
         super(mainFrame, mainController);
         super.setPointer(panel, output);
         createButtons();
@@ -26,26 +26,26 @@ public class SingleOrMultiPanelHandler extends AbstractPanelHandler {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.switchToStart();
+                mainFrame.switchToSingleOrMultiSelection();
             }
         });
-        singleplayerButton.addActionListener(new ActionListener() {
+        serverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.switchToSingleplayerGame();
+                mainFrame.switchToServerAdmin();
             }
         });
-        multiplayerButton.addActionListener(new ActionListener() {
+        clientButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                addToOutput("Kommt bald! (Hoffentlich :))");
+                mainFrame.switchToClientConnectToServer();
             }
         });
     }
 
     public void welcomeText(){
         output.setText("");
-        addToOutput("Anmeldung geglückt - willkommen " + mainController.getUserName() + "!");
-        addToOutput(mainController.getUserName() + ", bitte wähle einen Spielmodus.");
+        addToOutput("PANEL: Als Server legen Sie die Einstellungen für ein Spiel fest.\n");
+        addToOutput("PANEL: Als Client können Sie bei einem fremd-gehosteten Spiel einsteigen. Dazu müssen Sie nur die IP und den Port kennen.\n");
     }
 }

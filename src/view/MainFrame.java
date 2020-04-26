@@ -1,9 +1,11 @@
 package view;
 
 import control.MainController;
-import view.adminPanels.DatabaseAdministrationPanelHandler;
-import view.navigationPanels.SingleOrMultiPanelHandler;
-import view.navigationPanels.StartingPanelHandler;
+import view.dbAdminPanels.DatabaseAdministrationPanelHandler;
+import view.multiplayerPanels.*;
+import view.navigationPanels.ServerOrClientPanelHandler;
+import view.navigationPanels.SingleOrMultiSelectionPanelHandler;
+import view.navigationPanels.LoginPanelHandler;
 import view.singleplayerPanels.SingleplayerPanelHandler;
 
 import javax.swing.*;
@@ -16,8 +18,15 @@ public class MainFrame extends JFrame {
     // Attribute
 
     // Referenzen
-    private AbstractPanelHandler startingPanelHandler, adminPanelHandler, singleOrMultiPanelHandler, singleplayerGameHandler;
-    private JPanel startingPanel, adminPanel, singleOrMultiPanel, singleplayerGamePanel;
+    private AbstractPanelHandler loginPanelHandler, databaseAdministrationPanelHandler, singleOrMultiSelectionPanelHandler, serverOrClientPanelHandler;
+    private AbstractPanelHandler singleplayerGameHandler;
+    private AbstractPanelHandler serverAdminPanelHandler, serverLobbyPanelHandler, serverGamePanelHandler;
+    private AbstractPanelHandler clientConnectToServerPanelHandler, clientLobbyPanelHandler, clientGamePanelHandler;
+    private JPanel loginPanel, databaseAdministrationPanel, singleOrMultiSelectionPanel, serverOrClientPanel;
+    private JPanel singleplayerGamePanel;
+    private JPanel serverAdminPanel, serverLobbyPanel, serverGamePanel;
+    private JPanel clientConnectToServerPanel, clientLobbyPanel, clientGamePanel;
+
 
     /**
      * Konstruktor
@@ -40,19 +49,40 @@ public class MainFrame extends JFrame {
     }
 
     private void createPanels(MainController mainController){
-        startingPanelHandler        = new StartingPanelHandler(this, mainController);
-        startingPanel               = startingPanelHandler.getPanel();
+        loginPanelHandler = new LoginPanelHandler(this, mainController);
+        loginPanel = loginPanelHandler.getPanel();
 
-        adminPanelHandler           = new DatabaseAdministrationPanelHandler(this,mainController);
-        adminPanel                  = adminPanelHandler.getPanel();
+        databaseAdministrationPanelHandler  = new DatabaseAdministrationPanelHandler(this,mainController);
+        databaseAdministrationPanel         = databaseAdministrationPanelHandler.getPanel();
 
-        singleOrMultiPanelHandler   = new SingleOrMultiPanelHandler(this,mainController);
-        singleOrMultiPanel          = singleOrMultiPanelHandler.getPanel();
+        singleOrMultiSelectionPanelHandler  = new SingleOrMultiSelectionPanelHandler(this,mainController);
+        singleOrMultiSelectionPanel         = singleOrMultiSelectionPanelHandler.getPanel();
 
-        singleplayerGameHandler     = new SingleplayerPanelHandler(this,mainController);
-        singleplayerGamePanel       = singleplayerGameHandler.getPanel();
+        singleplayerGameHandler             = new SingleplayerPanelHandler(this,mainController);
+        singleplayerGamePanel               = singleplayerGameHandler.getPanel();
 
-        switchToPanel(startingPanel);
+        serverOrClientPanelHandler          = new ServerOrClientPanelHandler(this,mainController);
+        serverOrClientPanel                 = serverOrClientPanelHandler.getPanel();
+
+        serverAdminPanelHandler             = new ServerAdminPanelHandler(this,mainController);
+        serverAdminPanel                    = serverAdminPanelHandler.getPanel();
+
+        serverLobbyPanelHandler             = new ServerLobbyPanelHandler(this,mainController);
+        serverLobbyPanel                    = serverLobbyPanelHandler.getPanel();
+
+        serverGamePanelHandler              = new ServerGamePanelHandler(this,mainController);
+        serverGamePanel                     = serverGamePanelHandler.getPanel();
+
+        clientConnectToServerPanelHandler   = new ClientConnectToServerPanelHandler(this,mainController);
+        clientConnectToServerPanel          = clientConnectToServerPanelHandler.getPanel();
+
+        clientLobbyPanelHandler             = new ClientLobbyPanelHandler(this,mainController);
+        clientLobbyPanel                    = clientLobbyPanelHandler.getPanel();
+
+        clientGamePanelHandler              = new ClientGamePanelHandler(this,mainController);
+        clientGamePanel                     = clientGamePanelHandler.getPanel();
+
+        switchToPanel(loginPanel);
     }
 
     private void switchToPanel(JPanel panel){
@@ -62,21 +92,56 @@ public class MainFrame extends JFrame {
         this.repaint();
     }
 
-    public void switchToAdminDB(){
-        switchToPanel(adminPanel);
+    public void switchToDatabaseAdministration(){
+        switchToPanel(databaseAdministrationPanel);
     }
 
-    public void switchToStart(){
-        switchToPanel(startingPanel);
+    public void switchToLogin(){
+        switchToPanel(loginPanel);
     }
 
-    public void switchSingleOrMulti(){
-        switchToPanel(singleOrMultiPanel);
-        ((SingleOrMultiPanelHandler)singleOrMultiPanelHandler).welcomeText();
+    public void switchToSingleOrMultiSelection(){
+        switchToPanel(singleOrMultiSelectionPanel);
+        ((SingleOrMultiSelectionPanelHandler) singleOrMultiSelectionPanelHandler).welcomeText();
     }
 
     public void switchToSingleplayerGame(){
         ((SingleplayerPanelHandler)singleplayerGameHandler).prepare();
         switchToPanel(singleplayerGamePanel);
+    }
+
+    public void switchToServerOrClient(){
+        switchToPanel(serverOrClientPanel);
+        ((ServerOrClientPanelHandler)serverOrClientPanelHandler).welcomeText();
+    }
+
+    public void switchToServerAdmin(){
+        switchToPanel(serverAdminPanel);
+        ((ServerAdminPanelHandler)serverAdminPanelHandler).welcomeText();
+    }
+
+    public void switchToServerLobby(){
+        ((ServerLobbyPanelHandler) serverLobbyPanelHandler).prepare();
+        switchToPanel(serverLobbyPanel);
+    }
+
+    public void switchToServerGame(){
+        ((AbstractGamePanelHandler)serverGamePanelHandler).prepare();
+        switchToPanel(serverGamePanel);
+    }
+
+    public void switchToClientConnectToServer(){
+        ((ClientConnectToServerPanelHandler)clientConnectToServerPanelHandler).prepare();
+        switchToPanel(clientConnectToServerPanel);
+    }
+
+    public void switchToClientLobby(){
+        ((ClientLobbyPanelHandler) clientLobbyPanelHandler).prepare();
+        switchToPanel(clientLobbyPanel);
+    }
+
+    public void switchToClientGame(){
+        //((AbstractGamePanelHandler)serverGamePanelHandler).prepare();
+        switchToPanel(clientGamePanel);
     }
 }

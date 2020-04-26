@@ -1,4 +1,4 @@
-package view.adminPanels;
+package view.dbAdminPanels;
 
 import control.MainController;
 import view.AbstractPanelHandler;
@@ -44,7 +44,7 @@ public class DatabaseAdministrationPanelHandler extends AbstractPanelHandler {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.switchToStart();
+                mainFrame.switchToLogin();
             }
         });
         insertQuestionButton.addActionListener(new ActionListener() {
@@ -73,9 +73,9 @@ public class DatabaseAdministrationPanelHandler extends AbstractPanelHandler {
         boolean didIt = mainController.insertQuestion(question.getText(),answerA.getText(),answerB.getText(),answerC.getText(),answerD.getText(),rightAnswer);
 
         if(didIt){
-            addToOutput("Frage erfolgreich hinzugefügt.");
+            addToOutput("MAINCONTROLLER: Frage erfolgreich hinzugefügt.");
         }else{
-            addToOutput("Frage samt Antwortne existiert bereits in der DB. Der Befehl wurde nicht ausgeführt.");
+            addToOutput("MAINCONTROLLER-FEHLER: Frage samt Antwortne existiert bereits in der DB oder es gab einen anderweitigen Fehler. Der Befehl wurde nicht ausgeführt.");
         }
 
         addToOutput(mainController.getSQLOutput());

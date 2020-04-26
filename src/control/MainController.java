@@ -1,5 +1,7 @@
 package control;
 
+import control.clientserver.QuizGameClient;
+import control.clientserver.QuizGameServer;
 import control.database.DatabaseConnector;
 import model.QuestionAndAnswers;
 
@@ -16,7 +18,8 @@ public class MainController {
     private QuestionAndAnswers currentQuestion;
 
     //Referenzen für Client/Server
-
+    private QuizGameServer server;
+    private QuizGameClient client;
 
     /**
      * Achtung: dieser MainController übernimmt ALLE Arbeiten in diesem Programm. An sich wäre eine Aufteilung im Sinne einer hohen Kohäsion besser.
@@ -133,6 +136,72 @@ public class MainController {
         return false;
     }
 
+
+
+    // Methoden für Client-Server-Kommunikation //
+
+    /**
+     * Ein neues Server-Objekt wird erstellt. Falls ein altes Server-Objekt mit bestehender Verbindung vorhanden ist, wird dieses zuvor gelöscht.
+     * @param port Gibt den Port der Anwendung an.
+     * @param maxClients Legt die maximale Anzahl an Clients fest. Beachte: Der Server wird als Spieler zusätzlich gezählt. D.h. maxClients = 3 -> 4 Spieler insgesamt
+     */
+    public void openNewServer(int port, int maxClients){
+        closeServer();
+        server = new QuizGameServer(port,maxClients,this);
+    }
+
+    /**
+     * Falls ein Server-Objekt mit aktiver Verbindung vorhanden ist, wird diese Verbindung geschlossen.
+     */
+    public void closeServer(){
+        if(server != null && server.isOpen()){
+            server.close();
+        }
+    }
+
+    /**
+     * Rückgabe der Referenz auf den Server. Ist wichtig, damit die Kommunikation zwischen Server-Lobby und Server-Objekt einfach von statten geht.
+     * Achtung: widerspricht dem MVC-Konzept.
+     * @return
+     */
+    public QuizGameServer getServer(){
+        return server;
+    }
+
+
+    /**
+     * Falls es eine bestehe Verbindung zu einem Server gibt, wird diese zunächst geschlossen.
+     *
+     * Danach wird versucht, eine neue Verbindung zu einem Server herzustellen und das Ergebnis dieses Versuchs wird zurückgegeben.
+     * @param ip
+     * @param port
+     * @return true, falls der Client eine Verbindung herstellen konnte, ansonsten false.
+     */
+    public boolean createClientToServerConnection(String ip, int port){
+        closeClient();
+        client = new QuizGameClient(ip, port, this);
+        return client.isConnected();
+    }
+
+    /**
+     * Falls ein Client-Objekt mit aktiver Verbindung vorhanden ist, wird diese Verbindung geschlossen.
+     */
+    public boolean closeClient(){
+        if(client != null && client.isConnected()){
+            client.close();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Rückgabe der Referenz auf den Client. Ist wichtig, damit die Kommunikation zwischen Client-Lobby und Client-Objekt einfach von statten geht.
+     * Achtung: widerspricht dem MVC-Konzept.
+     * @return
+     */
+    public QuizGameClient getClient(){
+        return client;
+    }
 
 
 

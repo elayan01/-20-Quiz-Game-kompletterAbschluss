@@ -3,6 +3,8 @@ package view;
 import control.MainController;
 
 import javax.swing.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public abstract class AbstractPanelHandler {
 
@@ -21,11 +23,11 @@ public abstract class AbstractPanelHandler {
         this.output = output;
     }
 
-    protected void addToOutput(String text){
+    public void addToOutput(String text){
         if(output.getText().equals("")){
-            output.setText(text);
+            output.setText(new SimpleDateFormat("HH:mm:ss").format(new Date()) + ": " + text);
         }else{
-            output.setText(output.getText() + "\n" + text);
+            output.setText(output.getText() + "\n" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + ": " + text);
         }
     }
 
