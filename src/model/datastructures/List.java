@@ -5,7 +5,7 @@ package model.datastructures;
  */
 public class List<ContentType> {
 
-    //TODO 01: Fertigstellen der Liste
+   
   /* --------- Anfang der privaten inneren Klasse -------------- */
 
     private class ListNode {
