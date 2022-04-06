@@ -54,6 +54,14 @@ public class QuizGameServer extends Server {
     @Override
     public void processNewConnection(String pClientIP, int pClientPort) {
         //TODO Umsetzung der Methode, falls sich ein Client anmeldet.
+        if (this.getPlayerCount()<maxPlayers){
+            this.send(pClientIP,pClientPort,"NAMEBITTE");
+            allPlayers.append(new Player("hallo",pClientIP,pClientPort));
+            serverPanelHandler.updateJList();
+        }else {
+            this.send(pClientIP,pClientPort,"ABBRUCH");
+            this.closeConnection(pClientIP,pClientPort);
+        }
     }
 
     /**
@@ -123,8 +131,14 @@ public class QuizGameServer extends Server {
      * @return
      */
     public int getPlayerCount(){
-        //TODO Zählen der Objekte innerhalb einer Liste muss umgesetzt werden. Es kann sein, dass dies zur Laufzeit zu Fehlern führt (wenn während des Zählens ein Objekt hinzugefügt wird). Mal gucken :)
-        return 1;
+        // Zählen der Objekte innerhalb einer Liste muss umgesetzt werden. Es kann sein, dass dies zur Laufzeit zu Fehlern führt (wenn während des Zählens ein Objekt hinzugefügt wird). Mal gucken :)
+        int count=0;
+        allPlayers.toFirst();
+        while (allPlayers.hasAccess()){
+            count++;
+            allPlayers.next();
+        }
+        return count;
     }
 
     public int getMaxPlayers(){
@@ -147,9 +161,25 @@ public class QuizGameServer extends Server {
      * @param pClientPort
      */
     public void registerANewPlayer(String username, String pClientIP, int pClientPort){
-        //TODO Überprüfung, so dass kein Spielername doppelt vorhanden ist, muss noch umgesetzt werden.
+        // Überprüfung, so dass kein Spielername doppelt vorhanden ist, muss noch umgesetzt werden.
         Player player = new Player(username,pClientIP,pClientPort);
-        allPlayers.append(player);
+        boolean vorhanden=true;
+        allPlayers.toFirst();
+        while (allPlayers.hasAccess()){
+            if (!allPlayers.getContent().getUserName().equalsIgnoreCase(username)){
+                allPlayers.next();
+            }else {
+                vorhanden=false;
+                allPlayers.toLast();
+                allPlayers.next();
+            }
+        }
+        if (vorhanden){
+            allPlayers.append(player);
+        }else {
+            this.send(pClientIP,pClientPort,"NEUERNAME");
+        }
+
     }
 
     /**
@@ -160,12 +190,18 @@ public class QuizGameServer extends Server {
     public String[][] getPlayerInfos(){
         String[][] result = new String[getPlayerCount()][3];
         allPlayers.toFirst();
-        Player p = allPlayers.getContent();
-        result[0][0] = p.getUserName();
-        result[0][1] = p.getIP();
-        result[0][2] = String.valueOf(p.getPort());
+        int i=0;
+        while (allPlayers.hasAccess()&& i<result.length ){
+            Player p=allPlayers.getContent();
+            result[i][0] = p.getUserName();
+            result[i][1] = p.getIP();
+            result[i][2] = String.valueOf(p.getPort());
+            i++;
+            allPlayers.next();
+        }
 
-        //TODO Aus der kompletten (!) allPlayers-Liste muss ein zweidimensionales Array gemacht werden. Hier sieht man nur ein Beispiel für das erste Objekt in der Liste.
+
+        // Aus der kompletten (!) allPlayers-Liste muss ein zweidimensionales Array gemacht werden. Hier sieht man nur ein Beispiel für das erste Objekt in der Liste.
 
         return result;
     }
@@ -180,7 +216,8 @@ public class QuizGameServer extends Server {
     public void startGame(int timeToAnswer){
         serverState = WAITFORQUESTION;
         this.timeToAnswer = timeToAnswer;
-        //TODO Spielstart beim Server regeln.
+        this.sendToAll("START; Neuer Status:WAITFORQUESTION; Zeit zum beantworten:"+timeToAnswer);
+        // Spielstart beim Server regeln.
     }
 
     public void backToLobby(){
@@ -191,9 +228,11 @@ public class QuizGameServer extends Server {
      * Eine Frage samt möglicher Antworten wird an alle Clients verschickt.
      * @param qAndAs - wird über den ServerGamePanelHandler aus dem MainController (also quasi der DB) geholt und für alle Clients festgelegt. Dies wurde bereits umgesetzt.
      */
-    public void sendQuestionToAll(String[] qAndAs){
-        //TODO Frage und Antworten an Clients senden (Protokoll beachten!). Die Auswahl der Frage wurde bereits umgesetzt, d.h. qAndAs hat einen von außen festgelegten Inhalt.
-
+    public void sendQuestionToAll(String[] qAndAs) {
+        // Frage und Antworten an Clients senden (Protokoll beachten!). Die Auswahl der Frage wurde bereits umgesetzt, d.h. qAndAs hat einen von außen festgelegten Inhalt.
+        if (qAndAs.length >= 4) {
+            this.sendToAll("FRAGE:" +qAndAs[0]+":"+qAndAs[1]+":"+qAndAs[2]+":"+qAndAs[3]);
+        }
         serverState = WAITFORANSWERS;
         serverPanelHandler.addToOutput("SERVER: Es wurde eine Frage samt Antwortmöglichkeit an alle Clients versendet.");
     }
@@ -231,7 +270,17 @@ public class QuizGameServer extends Server {
      * @param answer
      */
     public void setAPlayersAnswer(String pClientIP, int pPort, char answer){
-        //TODO Die Antwort eines Spielers muss im entsprechenden Objekt aktualisiert werden, damit evalueAllAnswers korrekt arbeiten kann.
+        // Die Antwort eines Spielers muss im entsprechenden Objekt aktualisiert werden, damit evalueAllAnswers korrekt arbeiten kann.
+        allPlayers.toFirst();
+        while (!allPlayers.getContent().getIP().equalsIgnoreCase(pClientIP) && allPlayers.getContent().getPort()!=pPort){
+            allPlayers.next();
+        }
+        String p=""+answer;
+        if (p.length()>0){
+           allPlayers.getContent().setAnswer(answer);
+        }else {
+            allPlayers.getContent().setAnswer(allPlayers.getContent().getLastAnswer());
+        }
     }
 
     /**

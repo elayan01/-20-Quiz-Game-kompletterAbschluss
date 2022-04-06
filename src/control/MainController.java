@@ -94,6 +94,7 @@ public class MainController {
      * @return
      */
     public String getSQLOutput(){
+
         //TODO Rückmeldung des Datenbankzugriffs ausgeben.
         return "blubb";
     }

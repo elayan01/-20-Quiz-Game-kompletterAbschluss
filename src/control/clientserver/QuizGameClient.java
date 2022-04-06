@@ -42,9 +42,14 @@ public class QuizGameClient extends Client {
      * @return Namen zu allen Spielern. Das erste Objekt ist der Server-Spieler selbst.
      */
     public String[] getPlayerInfos(){
-        String[] result = new String[0];
+        QuizGameServer server=mainController.getServer();
+        int x=server.getPlayerCount();
+        String[] result = new String[x];
+        for (int i=0;i<result.length;i++){
+            result[i]=server.getPlayerInfos()[i][0];
+        }
 
-        //TODO Der Client fragt beim Server die Anzahl der Spieler an, damit das Array mit passender Größe erstellt werden kann. Im Anschluss werden die Spielernamen erfragt und nach und nach im Array gespeichert.
+        // Der Client fragt beim Server die Anzahl der Spieler an, damit das Array mit passender Größe erstellt werden kann. Im Anschluss werden die Spielernamen erfragt und nach und nach im Array gespeichert.
 
         return result;
     }
@@ -56,7 +61,8 @@ public class QuizGameClient extends Client {
      * @param text
      */
     public void sendChatTextToAll(String user, String text){
-        //TODO Chat-Text des Clients mit passendem Befehlswort an den Server schicken (Protokoll beachten!).
+        // Chat-Text des Clients mit passendem Befehlswort an den Server schicken (Protokoll beachten!).
+        this.send(user+"NACHTRICHT:"+text);
     }
 
     /**
@@ -64,7 +70,8 @@ public class QuizGameClient extends Client {
      * @param answer
      */
     public void sendAnswer(char answer){
-        //TODO Die Antwort eines Clients muss an den Server geschickt werden (Protokoll beachten!)
+        // Die Antwort eines Clients muss an den Server geschickt werden (Protokoll beachten!)
+        this.send("ANTWORT:"+answer);
     }
 
     /**
